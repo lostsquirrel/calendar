@@ -1,0 +1,17 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+flask = "*"
+mysql-connector-python = "*"
+flask-httpauth = "*"
+gevent = "*"
+
+[dev-packages]
+pycodestyle = "*"
+autopep8 = "*"
+
+[requires]
+python_version = "3.8"
