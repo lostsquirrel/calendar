@@ -1,4 +1,5 @@
 import logging
+import threading
 from mysql import connector
 from settings import (mysql_host, mysql_user, mysql_password,
                       mysql_db_name, mysql_pool_name, mysql_pool_size)
@@ -33,6 +34,7 @@ def create_pool():
     return connector.connect(**build_mysql_config())
 
 
+pool_lock = threading.Lock()
 pool = create_pool()
 
 
@@ -44,10 +46,15 @@ def choose_param(args, kwargs):
 
 
 def ensure_connection():
-    pass
-    # if not pool.is_connected():
-    #     print("reconnect")
-    #     pool.reconnect()
+    pool_lock.acquire()
+    try:
+        if not pool.is_connected():
+            print("reconnect")
+            pool.reconnect()
+    except Exception as e:
+        logger.error(e)
+    finally:
+        pool_lock.release()
 
 
 def execute(args, kwargs, cursor, sql):
@@ -76,7 +83,7 @@ def insert(method):
 
     def decorator(dao, *args, **kwargs):
         ensure_connection()
-        cursor = pool.cursor(buffered=True)
+        cursor = pool.cursor()
         try:
             sql = method(dao, *args, **kwargs)
             execute(args, kwargs, cursor, sql)
@@ -92,7 +99,7 @@ def query(method):
 
     def decorator(dao, *args, **kwargs):
         ensure_connection()
-        cursor = pool.cursor(buffered=True)
+        cursor = pool.cursor()
         try:
             sql = method(dao, *args, **kwargs)
             execute(args, kwargs, cursor, sql)
@@ -110,7 +117,7 @@ def update(method):
 
     def decorator(dao, *args, **kwargs):
         ensure_connection()
-        cursor = pool.cursor(buffered=True)
+        cursor = pool.cursor()
         try:
             sql = method(dao, *args, **kwargs)
             execute(args, kwargs, cursor, sql)
@@ -125,6 +132,7 @@ def update(method):
 
 def get(method):
     def decorator(dao, *args, **kwargs):
+        ensure_connection()
         cursor = pool.cursor()
         try:
             sql = method(dao, *args, **kwargs)
