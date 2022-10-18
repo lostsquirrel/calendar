@@ -12,9 +12,11 @@
             "envFile": "${workspaceFolder}/.env",
             "env": {
                 "FLASK_APP": "app.py",
-                "FLASK_ENV": "development"
             },
             "args": [
+                "--app",
+                "app",
+                "--debug",
                 "run",
                 "--host",
                 "0.0.0.0",

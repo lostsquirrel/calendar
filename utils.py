@@ -2,9 +2,10 @@ from dataclasses import asdict
 import math
 import uuid
 import json
-from datetime import datetime, date
+from datetime import datetime, date, timedelta, time
 from flask import make_response
 
+from settings import pregnancy_period_week, days_of_week, pregnancy_examination
 from db import Base
 
 
@@ -21,6 +22,8 @@ class CustomEncoder(json.JSONEncoder):
             return obj.strftime('%Y-%m-%d %H:%M:%S')
         elif isinstance(obj, date):
             return obj.strftime('%Y-%m-%d')
+        elif isinstance(obj, time):
+            return obj.strftime('%H:%M:%S')
         else:
             return json.JSONEncoder.default(self, obj)
 
@@ -125,3 +128,21 @@ class LogicException(Exception):
 
 def format_date(d: date):
     return d.strftime("%Y-%m-%d")
+
+
+def generate_pregnancy_weeks(start_date: datetime):
+    weeks = []
+    for week in range(pregnancy_period_week):
+        delta = week * days_of_week
+        # if delta > 0:
+        #     delta += 1
+        start = start_date.date() + timedelta(days=delta)
+        end = start + timedelta(days=days_of_week-1)
+        weeks.append((week+1, start, end))
+
+    return weeks
+
+
+def get_pregnancy_examinations(week: int) -> str:
+
+    return pregnancy_examination.get(f'{week}')

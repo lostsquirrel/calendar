@@ -1,12 +1,16 @@
 from calendar import Calendar
 from dataclasses import asdict
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, time
 
 from dao.event import eventDAO
 from db import transactional
 from domain.calendar import CalendarItem, CalendarView
 from domain.event import Event
-from utils import format_date
+from utils import (
+    format_date,
+    generate_pregnancy_weeks,
+    get_pregnancy_examinations
+)
 
 
 def calendar_range(firstweekday: int, year: int, month: int):
@@ -115,8 +119,34 @@ def normal(calendar_id: int, title: str, description: str,
         start_date=start_date,
         end_date=end_date,
         start_time=start_time,
-        end_time=None,
+        end_time=end_time,
         recurrence=0,
         state=1,
     )
     return eventDAO.save(**asdict(event))
+
+
+@transactional
+def pregnancy_start(calendar_id: int, start: datetime):
+    weeks = generate_pregnancy_weeks(start)
+    events = []
+    for w in weeks:
+        wd = get_pregnancy_examinations(w[0])
+        if wd is None:
+            wd = ""
+        event = Event(
+            id=None,
+            title=f'第 {w[0]} 周',
+            description=wd,
+            calendar_id=calendar_id,
+            create_time=datetime.now(),
+            modified_time=datetime.now(),
+            start_date=w[1],
+            end_date=w[2],
+            start_time=time(hour=0, minute=0, second=0),
+            end_time=time(hour=23, minute=59, second=59),
+            recurrence=0,
+            state=1
+        )
+        events.append(asdict(event))
+    eventDAO.batch_save(events)

@@ -57,12 +57,15 @@ def ensure_connection():
         pool_lock.release()
 
 
-def execute(args, kwargs, cursor, sql):
+def execute(args, kwargs, cursor, sql, many=False):
     param = choose_param(args, kwargs)
     if param is None:
         cursor.execute(sql)
     else:
-        cursor.execute(sql, param)
+        if many:
+            cursor.executemany(sql, param)
+        else:
+            cursor.execute(sql, param)
 
 
 def transactional(method):
@@ -88,6 +91,24 @@ def insert(method):
             sql = method(dao, *args, **kwargs)
             execute(args, kwargs, cursor, sql)
             return cursor.lastrowid
+        except Exception as e:
+            logger.error(e)
+        finally:
+            cursor.close()
+    return decorator
+
+
+def insert_many(method):
+
+    def decorator(dao, *args):
+        ensure_connection()
+        cursor = pool.cursor()
+        try:
+            sql, keys = method(dao, *args)
+            params = []
+            for param in args[0]:
+                params.append(tuple(param[key] for key in keys))
+            cursor.executemany(sql, params)
         except Exception as e:
             logger.error(e)
         finally:

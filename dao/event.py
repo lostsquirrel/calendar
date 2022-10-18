@@ -20,6 +20,28 @@ class EventDAO:
         """
         return sql
 
+    @db.insert_many
+    def batch_save(self, dataset):
+        sql = """
+        INSERT INTO events
+            (`title`, `description`, `calendar_id`,
+            `create_time`, `modified_time`, `state`,
+            `start_date`, `end_date`, `start_time`, `end_time`,
+            `recurrence`)
+        VALUES (
+            %s, %s, %s,
+            %s, %s, %s,
+            %s, %s, %s, %s,
+            %s);
+        """
+        keys = (
+            "title", "description", "calendar_id",
+            "create_time", "modified_time", "state",
+            "start_date", "end_date", "start_time", "end_time",
+            "recurrence"
+        )
+        return sql, keys
+
     @db.query
     def find_by_time_range(self, calendar_id: int, start: date, end: date):
         sql = """SELECT

@@ -46,6 +46,21 @@ def menstruation(calendar_id):
     return render_json(None)
 
 
+@event.route("/calendar/<calendar_id>/pregnancy", methods=["POST"])
+@auth.login_required
+def pregnancy(calendar_id):
+    user = auth.current_user()
+    form = request.get_json()
+    d = datetime.now()
+    year, month, day = Validator().rule("year", d.year).rule(
+        "month", d.month).rule("day", d.date).validate_form(form)
+    # menstruation_period =
+    start = datetime(year=int(year), month=int(month), day=int(day))
+    user_info = userService.getUserInfo(user.id)
+    eventService.pregnancy_start(calendar_id, start)
+    return render_json(None)
+
+
 @event.route("/calendar/<calendar_id>", methods=["POST"])
 @auth.login_required
 def normal(calendar_id):
