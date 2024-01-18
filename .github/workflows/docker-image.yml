@@ -39,9 +39,9 @@ jobs:
         run: |
           pip3 install --user pipenv
           pipenv lock
-          PIPENV_VENV_IN_PROJECT=1
-          pipenv sync
-          ls
+          PIPENV_VENV_IN_PROJECT=1 pipenv sync
+          
+          ls -la
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
