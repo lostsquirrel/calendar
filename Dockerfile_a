@@ -1,11 +1,10 @@
 FROM python:3.10-bullseye
 
-ARG VENV_PATH
 RUN mkdir -v /usr/src/venv
-COPY ${VENV_PATH} /usr/src/venv/
+COPY .venv /usr/src/venv/
 RUN useradd -s /sbin/nologin word
 
-COPY . /usr/src
+COPY app /usr/src
 WORKDIR /usr/src/
 USER word
 EXPOSE 8000
