@@ -33,7 +33,7 @@ jobs:
         run: |
           cp app/Pipfile .
           sed -i 's#https://pypi.tuna.tsinghua.edu.cn/simple#https://pypi.org/simple#g' Pipfile
-          mv Dockerfile_a Dockerfile
+          mv app/Dockerfile_a Dockerfile
       - name: pipenv install
         id: venv
         run: |
