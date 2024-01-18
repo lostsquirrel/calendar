@@ -41,6 +41,7 @@ jobs:
           pipenv lock
           PIPENV_VENV_IN_PROJECT=1
           pipenv sync
+          ls
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
