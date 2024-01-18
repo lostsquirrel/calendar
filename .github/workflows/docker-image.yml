@@ -35,6 +35,7 @@ jobs:
       - name: pipenv install
         id: venv
         run: |
+          pip3 install --user pipenv
           pipenv sync
           echo "venv=`pipenv --venv`" >> "$GITHUB_OUTPUT"
       - name: Build and push Docker image
