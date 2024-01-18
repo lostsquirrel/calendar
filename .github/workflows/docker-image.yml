@@ -37,9 +37,10 @@ jobs:
       - name: pipenv install
         id: venv
         run: |
+          export PIPENV_VENV_IN_PROJECT=1
           pip3 install --user pipenv
           pipenv lock
-          PIPENV_VENV_IN_PROJECT=1 pipenv sync
+          pipenv sync
           .venv/bin/pip install --upgrade pip
           ls -la
 
