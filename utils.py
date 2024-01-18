@@ -1,12 +1,12 @@
-from dataclasses import asdict
+import json
 import math
 import uuid
-import json
-from datetime import datetime, date, timedelta, time
+from dataclasses import asdict, is_dataclass
+from datetime import date, datetime, time, timedelta
+
 from flask import make_response
 
-from settings import pregnancy_period_week, days_of_week, pregnancy_examination
-from db import Base
+from settings import days_of_week, pregnancy_examination, pregnancy_period_week
 
 
 def generate_uuid():
@@ -16,8 +16,8 @@ def generate_uuid():
 class CustomEncoder(json.JSONEncoder):
 
     def default(self, obj):
-        if isinstance(obj, Base):
-            return obj.unbox()
+        if is_dataclass(obj):
+            return asdict(obj)
         elif isinstance(obj, datetime):
             return obj.strftime('%Y-%m-%d %H:%M:%S')
         elif isinstance(obj, date):
@@ -89,7 +89,7 @@ class Validator():
         return _param
 
 
-class Paging(Base):
+class Paging():
 
     def __init__(self, total: int, page: int, per_page: int):
 

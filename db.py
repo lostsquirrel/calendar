@@ -1,21 +1,20 @@
 import logging
 import threading
+
 from mysql import connector
-from settings import (mysql_host, mysql_user, mysql_password,
-                      mysql_db_name, mysql_pool_name, mysql_pool_size)
+
+from settings import (
+    mysql_db_name,
+    mysql_host,
+    mysql_password,
+    mysql_pool_name,
+    mysql_pool_size,
+    mysql_user,
+)
 
 logger = logging.getLogger(__name__)
 
 
-class Base():
-
-    def unbox(self):
-        b = dict()
-        for k, v in vars(self).items():
-            if k.startswith(f'_{self.__class__.__name__}'):
-                k = k.replace(self.__class__.__name__, '').lstrip("_")
-            b[k] = v
-        return b
 
 
 def build_mysql_config():
