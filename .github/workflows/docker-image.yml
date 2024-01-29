@@ -16,10 +16,14 @@ jobs:
     - uses: actions/setup-python@v5
       with:
         python-version: '3.10' 
+      env:
+        PIPENV_VENV_IN_PROJECT: 1
     - run: |
+        
         pip3 install --upgrade pip
         pip3 install --user pipenv
-        pipenv sync
+        pipenv lock --pypi-mirror=https://pypi.org/simple
+        pipenv sync --pypi-mirror=https://pypi.org/simple
         pipenv --venv
   build:
 
@@ -27,7 +31,7 @@ jobs:
     needs: venv
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: app
 
