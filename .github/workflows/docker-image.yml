@@ -18,11 +18,12 @@ jobs:
       with:
         python-version: '3.10' 
       env:
-        PIPENV_VENV_IN_PROJECT: 1
+        
         TEST: xxx
     - run: |
         ls -la
-        echo "PIPENV_VENV_IN_PROJECT $PIPENV_VENV_IN_PROJECT $TEST ${TEST} $(TEST)"
+        PIPENV_VENV_IN_PROJECT=1
+        echo "PIPENV_VENV_IN_PROJECT $PIPENV_VENV_IN_PROJECT $env.TEST ${TEST} $(TEST)"
         sed -i 's#https://pypi.tuna.tsinghua.edu.cn/simple#https://pypi.org/simple#g' Pipfile
         pip3 install --upgrade pip
         pip3 install --user pipenv
