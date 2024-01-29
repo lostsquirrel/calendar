@@ -37,12 +37,12 @@ jobs:
         pipenv sync
         pipenv --venv
         mv .venv venv
-        ls -la ~
+        echo ${{ github.workspace }}
     - uses: actions/cache/save@v4
       name: cache dependencies
       if: steps.changes.outputs.pipenv == 'true'
       with:
-        path: ~/venv
+        path: ${{ github.workspace }}/venv
         key: pipenv
   build:
 
@@ -69,7 +69,7 @@ jobs:
         id: cache-restore
         uses: actions/cache/restore@v4
         with:
-          path: ~/venv
+          path: ${{ github.workspace }}/venv
           key: pipenv
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
