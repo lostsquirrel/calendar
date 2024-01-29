@@ -19,12 +19,13 @@ jobs:
       env:
         PIPENV_VENV_IN_PROJECT: 1
     - run: |
-        
+        echo "PIPENV_VENV_IN_PROJECT $PIPENV_VENV_IN_PROJECT"
         pip3 install --upgrade pip
         pip3 install --user pipenv
         pipenv lock --pypi-mirror=https://pypi.org/simple
         pipenv sync --pypi-mirror=https://pypi.org/simple
         pipenv --venv
+        ls -la
   build:
 
     runs-on: ubuntu-latest
