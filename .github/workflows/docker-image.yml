@@ -20,11 +20,11 @@ jobs:
           pipenv:
             - 'Pipfile'
     - uses: actions/setup-python@v5
-      if: steps.changes.outputs.src == 'true'
+      if: steps.changes.outputs.pipenv == 'true'
       with:
         python-version: '3.10'
 
-    - if: steps.changes.outputs.src == 'true'
+    - if: steps.changes.outputs.pipenv == 'true'
       name: download dependencies
       run: |
 
@@ -39,7 +39,7 @@ jobs:
         mv .venv venv
     - uses: actions/cache/save@v4
       name: cache dependencies
-      if: steps.changes.outputs.src == 'true'
+      if: steps.changes.outputs.pipenv == 'true'
       with:
         path: ~/venv
         key: pipenv
