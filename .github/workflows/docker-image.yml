@@ -37,6 +37,7 @@ jobs:
         pipenv sync
         pipenv --venv
         mv .venv venv
+        ls -la ~
     - uses: actions/cache/save@v4
       name: cache dependencies
       if: steps.changes.outputs.pipenv == 'true'
