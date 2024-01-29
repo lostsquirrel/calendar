@@ -13,23 +13,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: actions/setup-python@v5
-      name: download dependencies
+    - uses: dorny/paths-filter@v3
+      id: changes
       with:
-        python-version: '3.10' 
-      env:
-        TEST: xxx
-    - run: |
-        ls -la
+        filters: |
+          pipenv:
+            - 'Pipfile'
+    - uses: actions/setup-python@v5
+      if: steps.changes.outputs.src == 'true'
+      with:
+        python-version: '3.10'
+
+    - if: steps.changes.outputs.src == 'true'
+      name: download dependencies
+      run: |
+
         export PIPENV_VENV_IN_PROJECT=1
-        echo "PIPENV_VENV_IN_PROJECT $PIPENV_VENV_IN_PROJECT  ${{env.TEST}}"
+
         sed -i 's#https://pypi.tuna.tsinghua.edu.cn/simple#https://pypi.org/simple#g' Pipfile
         pip3 install --upgrade pip
         pip3 install --user pipenv
         pipenv lock
         pipenv sync
         pipenv --venv
-        ls -la
+        mv .venv venv
+    - uses: actions/cache/save@v4
+      name: cache dependencies
+      if: steps.changes.outputs.src == 'true'
+      with:
+        path: ~/venv
+        key: python-pipenv
   build:
 
     runs-on: ubuntu-latest
