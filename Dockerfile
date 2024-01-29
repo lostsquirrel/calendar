@@ -1,6 +1,6 @@
 FROM python:3.10-bookworm
 
-ADD venv /
+COPY venv /venv
 RUN useradd -s /sbin/nologin word
 
 COPY app /usr/src
