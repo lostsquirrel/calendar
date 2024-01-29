@@ -71,10 +71,12 @@ jobs:
         with:
           path: ${{ github.workspace }}/venv
           key: pipenv
+          fail-on-cache-miss: true
       - run: |
           ls -la venv
           mv app/Dockerfile .
       - name: Build and push Docker image
+        if: steps.cache-restore.outputs.cache-hit == 'true'
         uses: docker/build-push-action@v5
         with:
           context: .
