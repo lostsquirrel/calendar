@@ -3,7 +3,7 @@ FROM python:3.10-bookworm
 COPY venv /venv
 RUN useradd -s /sbin/nologin word
 
-COPY app /usr/src
+COPY . /usr/src
 WORKDIR /usr/src/
 USER word
 EXPOSE 8000
