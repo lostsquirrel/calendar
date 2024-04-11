@@ -13,23 +13,12 @@ jobs:
     runs-on: python:3.10-bookworm
     steps:
     - uses: actions/checkout@v4
-    - uses: dorny/paths-filter@v3
-      id: changes
-      with:
-        filters: |
-          pipenv:
-            - 'Pipfile'
+
     - uses: actions/setup-python@v5
-      if: steps.changes.outputs.pipenv == 'true'
       with:
         python-version: '3.10'
-
-    - if: steps.changes.outputs.pipenv == 'true'
-      name: download dependencies
       run: |
-
         export PIPENV_VENV_IN_PROJECT=1
-
         sed -i 's#https://pypi.tuna.tsinghua.edu.cn/simple#https://pypi.org/simple#g' Pipfile
         pip3 install --upgrade pip
         pip3 install --user pipenv
@@ -38,50 +27,27 @@ jobs:
         pipenv --venv
         mv .venv venv
         
-        echo ${{ github.workspace }}
-    - uses: actions/cache/save@v4
-      name: cache dependencies
-      if: steps.changes.outputs.pipenv == 'true'
+
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
       with:
-        path: ${{ github.workspace }}/venv
-        key: pipenv
-  build:
+        username: ${{ github.actor }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    runs-on: ubuntu-latest
-    needs: venv
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          path: app
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ github.repository }}
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ github.actor }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ github.repository }}
-      - name: Restore cached Primes
-        id: cache-restore
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ github.workspace }}/venv
-          key: pipenv
-          fail-on-cache-miss: true
-      - run: |
-          ls -la venv
-          mv app/Dockerfile .
-      - name: Build and push Docker image
-        if: steps.cache-restore.outputs.cache-hit == 'true'
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+    - run: |
+        ls -la venv
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
 

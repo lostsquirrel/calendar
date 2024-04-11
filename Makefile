@@ -1,10 +1,13 @@
 SHELL=/bin/bash
 
 TAG=$(shell git rev-parse --short HEAD)
+base:
+	docker build -t calendar:base -f Dockerfile_base .
+
 image:
 	git status
 	
-	docker build -t ccr.ccs.tencentyun.com/lu520/calendar:$(TAG) .
+	docker build -t lostsquirrel/calendar:$(TAG) -f Dockerfile_b .
 
-tx:
-	docker push ccr.ccs.tencentyun.com/lu520/calendar:$(TAG)
+push:
+	docker push lostsquirrel/calendar:$(TAG)

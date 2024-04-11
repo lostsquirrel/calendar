@@ -1,0 +1,8 @@
+FROM python:3.10-bookworm as builder
+
+RUN pip install --user -i https://pypi.tuna.tsinghua.edu.cn/simple pipenv
+ENV PIPENV_VENV_IN_PROJECT=1
+ADD Pipfile.lock Pipfile /tmp/
+WORKDIR /tmp
+RUN /root/.local/bin/pipenv sync
+RUN mv /tmp/.venv /venv

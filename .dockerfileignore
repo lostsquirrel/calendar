@@ -1,0 +1,8 @@
+__pycache__/
+.fleet/
+.github/
+.vscode/
+.env
+Dockerfile*
+Makefile
+Pipfile*
