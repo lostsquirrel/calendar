@@ -17,6 +17,7 @@ jobs:
     - uses: actions/setup-python@v5
       with:
         python-version: '3.10'
+    - name: set up pipenv
       run: |
         export PIPENV_VENV_IN_PROJECT=1
         sed -i 's#https://pypi.tuna.tsinghua.edu.cn/simple#https://pypi.org/simple#g' Pipfile
@@ -27,8 +28,6 @@ jobs:
         pipenv --venv
         mv .venv venv
         
-
-
     - name: Login to Docker Hub
       uses: docker/login-action@v3
       with:
