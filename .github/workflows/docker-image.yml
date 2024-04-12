@@ -8,14 +8,15 @@ on:
 
 jobs:
 
-  venv:
+  build:
 
     runs-on: ubuntu-latest
     env:
       PIPENV_CACHE_DIR: ${{ github.workspace }}/venv
     steps:
     - uses: actions/checkout@v4
-
+      with:
+        path: app
     - uses: actions/setup-python@v5
       with:
         python-version: '3.10'
@@ -25,44 +26,36 @@ jobs:
 
     - name: download dependencies
       run: |
+        cp app/Pipfile .
         export PIPENV_SYSTEM=1
         export PIP_USER=1
         export PIP_IGNORE_INSTALLED=1
         export PYTHONUSERBASE=${{ github.workspace }}/venv
         sed -i 's#https://pypi.tuna.tsinghua.edu.cn/simple#https://pypi.org/simple#g' Pipfile
-        pipenv install --deploy --skip-lock
+        pipenv lock
+        pipenv install --deploy
         ls venv
 
-  build:
+    - name: Login to Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ github.actor }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    runs-on: ubuntu-latest
-    needs: venv
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          path: app
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ github.repository }}
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ github.actor }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ github.repository }}
-
-      - run: |
-          ls -la venv/bin
-          mv app/Dockerfile .
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+    - run: |
+        ls -la venv/bin
+        mv app/Dockerfile .
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
 
