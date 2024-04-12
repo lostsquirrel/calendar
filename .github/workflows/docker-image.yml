@@ -11,6 +11,8 @@ jobs:
   venv:
 
     runs-on: ubuntu-latest
+    env:
+      PIPENV_CACHE_DIR: ${{ github.workspace }}/venv
     steps:
     - uses: actions/checkout@v4
 
