@@ -25,7 +25,6 @@ jobs:
 
     - name: download dependencies
       run: |
-        export PIPENV_VENV_IN_PROJECT=1
         export PIPENV_SYSTEM=1
         export PIP_USER=1
         export PIP_IGNORE_INSTALLED=1
