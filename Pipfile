@@ -9,7 +9,6 @@ mysql-connector-python = "*"
 flask-httpauth = "*"
 gevent = "*"
 
-
 [dev-packages]
 pycodestyle = "*"
 autopep8 = "*"
