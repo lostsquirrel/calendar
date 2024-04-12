@@ -13,42 +13,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - uses: dorny/paths-filter@v3
-      id: changes
-      with:
-        filters: |
-          pipenv:
-            - 'Pipfile'
-    # - uses: actions/setup-python@v5
-    #   if: steps.changes.outputs.pipenv == 'true'
-    #   with:
-    #     python-version: '3.10'
-    - uses: docker://python:3.10-bookworm
-      if: steps.changes.outputs.pipenv == 'true'
 
-    - if: steps.changes.outputs.pipenv == 'true'
-      name: download dependencies
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+        cache: 'pipenv'
+    - name: Install pipenv
+      run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
+
+    - name: download dependencies
       run: |
-        pip3 install --upgrade pip
-        pip3 install pipenv
         export PIPENV_VENV_IN_PROJECT=1
         export PIPENV_SYSTEM=1
         export PIP_USER=1
         export PIP_IGNORE_INSTALLED=1
         export PYTHONUSERBASE=${{ github.workspace }}/venv
         sed -i 's#https://pypi.tuna.tsinghua.edu.cn/simple#https://pypi.org/simple#g' Pipfile
-        # pipenv lock
-        # pipenv sync
-        # pipenv --venv
-        # mv .venv venv
         pipenv install --deploy
 
-    - uses: actions/cache/save@v4
-      name: cache dependencies
-      if: steps.changes.outputs.pipenv == 'true'
-      with:
-        path: ${{ github.workspace }}/venv
-        key: pipenv-${{ hashFiles('Pipfile') }}
   build:
 
     runs-on: ubuntu-latest
@@ -70,13 +52,7 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ github.repository }}
-      - name: Restore cached Primes
-        id: cache-restore
-        uses: actions/cache/restore@v4
-        with:
-          path: ${{ github.workspace }}/venv
-          key: pipenv-${{ hashFiles('Pipfile') }}
-          fail-on-cache-miss: true
+
       - run: |
           ls -la venv/bin
           mv app/Dockerfile .
