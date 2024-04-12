@@ -75,7 +75,7 @@ jobs:
           key: pipenv-${{ hashFiles('Pipfile') }}
           fail-on-cache-miss: true
       - run: |
-          ls -la venv
+          ls -la venv/bin
           mv app/Dockerfile .
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
