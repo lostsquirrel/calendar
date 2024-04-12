@@ -2,7 +2,7 @@ FROM python:3.10-bookworm
 
 COPY venv /venv
 RUN useradd -s /sbin/nologin word
-RUN /venv/bin/pip install gevent
+RUN /venv/bin/pip install gevent 
 
 COPY app /usr/src
 WORKDIR /usr/src/

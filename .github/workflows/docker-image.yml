@@ -39,13 +39,13 @@ jobs:
         pipenv sync
         pipenv --venv
         mv .venv venv
-        echo ${{ github.workspace }}
+
     - uses: actions/cache/save@v4
       name: cache dependencies
       if: steps.changes.outputs.pipenv == 'true'
       with:
         path: ${{ github.workspace }}/venv
-        key: pipenv-{{ hashFiles('Pipfile') }}
+        key: pipenv-${{ hashFiles('Pipfile') }}
   build:
 
     runs-on: ubuntu-latest
@@ -72,7 +72,7 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: ${{ github.workspace }}/venv
-          key: pipenv-{{ hashFiles('Pipfile') }}
+          key: pipenv-${{ hashFiles('Pipfile') }}
           fail-on-cache-miss: true
       - run: |
           ls -la venv
