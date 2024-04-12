@@ -31,14 +31,18 @@ jobs:
       run: |
 
         export PIPENV_VENV_IN_PROJECT=1
-
+        export PIPENV_SYSTEM=1
+        export PIP_USER=1
+        export PIP_IGNORE_INSTALLED=1
+        export PYTHONUSERBASE=${{ github.workspace }}/venv
         sed -i 's#https://pypi.tuna.tsinghua.edu.cn/simple#https://pypi.org/simple#g' Pipfile
         pip3 install --upgrade pip
         pip3 install --user pipenv
-        pipenv lock
-        pipenv sync
-        pipenv --venv
-        mv .venv venv
+        # pipenv lock
+        # pipenv sync
+        # pipenv --venv
+        # mv .venv venv
+        pipenv install --deploy
 
     - uses: actions/cache/save@v4
       name: cache dependencies
