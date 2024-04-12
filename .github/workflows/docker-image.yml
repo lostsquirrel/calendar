@@ -19,10 +19,12 @@ jobs:
         filters: |
           pipenv:
             - 'Pipfile'
-    - uses: actions/setup-python@v5
+    # - uses: actions/setup-python@v5
+    #   if: steps.changes.outputs.pipenv == 'true'
+    #   with:
+    #     python-version: '3.10'
+    - uses: docker://python:3.10-bookworm
       if: steps.changes.outputs.pipenv == 'true'
-      with:
-        python-version: '3.10'
 
     - if: steps.changes.outputs.pipenv == 'true'
       name: download dependencies
