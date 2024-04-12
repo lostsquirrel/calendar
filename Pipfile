@@ -7,10 +7,6 @@ name = "pypi"
 flask = "*"
 mysql-connector-python = "*"
 flask-httpauth = "*"
-gevent = "*"
-
-
-
 
 [dev-packages]
 pycodestyle = "*"
